@@ -1,0 +1,45 @@
+.peerVideo{
+    height: inherit;
+    width: inherit;
+    /* transition: all 150ms; */
+
+}
+.peerVideoContainer{
+    height: 100vh;
+    width: 100vw;
+    transition:height 150ms;
+    transition:width 150ms;
+
+}
+
+
+.myVideo{
+    height: inherit;
+    width: inherit;
+    /* transition: all 150ms; */
+
+    
+}
+.myVideoContainer{
+    all:none;
+    z-index: 9;
+    height: 100px;
+    width: 100px;
+    top:100px;
+    left:100px;
+    position: absolute;
+    transition:height 150ms;
+    transition:width 150ms;
+}
+.functionalButtonContainer{
+    position: absolute;
+    width: 50vw;
+    z-index: 99;
+    display: grid;
+    place-items: center;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    top:90%;
+    left: 50%;
+    translate: -50%;
+}

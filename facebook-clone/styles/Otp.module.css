@@ -1,0 +1,139 @@
+.heading {
+  margin-top: 0;
+  padding: 1em;
+  border-bottom: 1px solid rgb(194, 191, 191);
+}
+.page {
+  background-color: white;
+  height: 100vh;
+  width: 100vw;
+}
+.alert{
+    border: 1px solid red;
+    display: none;
+    align-items: center;
+    border-radius: 5px;
+    overflow: hidden;
+    max-height: 4rem;
+}
+.alert .imgContainer{
+        max-height: 4rem;
+        min-height: 3rem;
+        width: 2.5rem;
+        min-width: 2.5rem;
+        display: flex;
+        overflow: hidden;
+        align-items: center;
+        justify-content: center;
+        background-color: red;
+        margin-inline-end: .5em;
+    }
+.alert .imgContainer img{
+            height: 1em;
+            width: 1em;
+        }
+.alert p{
+    margin: 0;
+    font-size: .9em;
+   }
+.container {
+  background-color: #e9ebee;
+  height: 60%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal {
+  background-color: white;
+  border-radius: 10px;
+  width: 500px;
+}
+.logo > svg {
+  height: 3.1em;
+}
+.logo {
+  position: relative;
+  z-index: 1;
+  background-color: white;
+  box-shadow: 5px 4px 8px #88888841;
+}
+.buttonGrid{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em;
+}
+.information{
+    display: flex;
+    align-items: center;
+}
+.belowHeading{
+    padding: 1em;
+    padding-top: 0;
+}
+.emailMessage{
+    font-size: .95em;
+}
+.email{
+    font-size: small;
+}
+.emailDetail{
+    display: block;
+}
+.hr{
+    outline: none;
+    margin: 0;
+    height: 0.01em;
+    background-color: rgb(194, 191, 191) ;
+    border: none;
+}
+.resend{
+    background-color: transparent;
+    border: none;
+    outline: none;
+    color: rgb(72, 72, 193);
+}
+.inputContainer {
+width: 50%;
+
+}
+.inputContainer input{
+    border: 1px solid gray;
+    padding: 1.5em;
+    border-radius: 5px;
+    width: 90%;
+}
+.inputContainer input::placeholder{
+        color: black;
+        font-size: medium;
+    }
+.inputContainer input:focus::placeholder{
+        color: gray;
+    }
+.rightButton{
+    display: flex;
+    
+}
+.rightButton button{
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    font-weight: bolder;
+    border: none;
+    border-radius: 5px;
+    padding: 1em;
+
+
+ }
+.cancel{
+    margin-inline-end: 1em;
+    width: 5rem;
+
+}
+.submit{
+    background-color: #1877f2;
+    color: white;
+    width: 7rem;
+}

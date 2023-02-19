@@ -1,0 +1,156 @@
+.headingSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5em;
+  /* margin-bottom: 1em; */
+}
+.requestBox {
+  height: 9rem;
+  display: grid;
+  width: 22.5rem;
+  margin-bottom: 0;
+}
+.topic {
+  color: white;
+  font-weight: bolder;
+  margin: 0;
+
+}
+.profilePicOfSender{
+  height: 3.7rem;
+  align-items: start;
+  width:3.7rem;
+  border-radius: 50%;
+}
+.profilePicOfSender img{
+    height: inherit !important;
+    border-radius: inherit ;
+    width: inherit !important;
+  }
+.seeAllButton {
+  font-size: 0.9em;
+  color: #345aa4;
+  padding: .5em;
+  margin: 0;
+}
+.seeAllButton:hover {
+    background-color: rgba(128, 128, 128, 0.23);
+    border-radius: 5px;
+    cursor: pointer;
+  }
+.friendRequestSection {
+  width: inherit;
+  padding:.5em 1em;
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  border-radius: 10px;
+}
+.friendRequestSection:hover{
+    background-color: #6a6c6f4f;
+  }
+.mainSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin: 0;
+  gap:1em;
+  height:min-content;
+  width: 16rem;
+}
+.nameContainer {
+  grid-column: span 3;
+  margin: 0;
+  height: min-content;
+}
+.timer {
+  grid-column: 4;
+  height: min-content;
+  color:#1877f2;
+  font-size: .78em;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.timer::before{
+    content:"";
+    position: absolute;
+    left: 120%;
+    
+    height: 8px;
+    width: 8px;
+    background-color: #1877f2;
+    border-radius: 50%;
+  }
+.mutualFriendWrap {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  margin-top: .2em;
+  margin-bottom: 0;
+
+}
+.mutualFriendCounter {
+  font-size: smaller;
+  color: #888b90;
+}
+.profileOfMutualFriend{
+  margin-top: .1em;
+
+}
+.profileOfMutualFriend img{
+    position: relative;
+    white-space: nowrap;
+    line-break: loose;
+    border:1px solid black;
+    height: 17px;
+    width: 17px;
+    border-radius: 50%;
+  }
+.profileOfMutualFriend img:first-child{
+      z-index: 3;
+    }
+.profileOfMutualFriend img:nth-child(2){
+      z-index: 2;
+      right:3px;
+
+    }
+.profileOfMutualFriend img:last-child{
+      z-index: 1;
+      right:6px;
+
+    }
+.buttonsContainer {
+  grid-column: 1 /5;
+  display: flex;
+  position: relative;
+  bottom: .5em;
+  gap: .5em;
+  margin: 0;
+}
+.buttonsContainer button {
+    border-radius: 5px;
+    border: none;
+    outline: none;
+    height: 2.4em;
+    width: 8.5em;
+    font-weight: bold;
+    color: white;
+    font-size: .9em;
+  }
+.confirmButton {
+  background-color: #1877f2;
+}
+.confirmButton:hover {
+    background-color: #297ff0;
+  }
+.deleteButton {
+    background-color: #57585b7e;
+}
+.deleteButton:hover {
+        background-color:#6f70727e ;
+    }
+.nameOfSender{
+   color: white;
+   font-size: .95em;
+}

@@ -1,0 +1,454 @@
+.modal {
+  position: fixed;
+  bottom: 0;
+  background-color: white;
+  bottom: 0;
+  right: 80px;
+  height: 450px;
+  width: 350px;
+  border-radius: 10px;
+  /* overflow: hidden; */
+}
+@keyframes timer {
+  100% {
+    --display: flex;
+  }
+}
+@keyframes fadeIN {
+  0% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.closer {
+  height: 1.7em;
+  width: 1.7em;
+  margin-inline-end: 0.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  --display: none;
+}
+.closer::after {
+  content: "Close chat";
+}
+.minimizer {
+  border-radius: 50%;
+  --display: none;
+}
+.minimizer::after {
+  content: "Minimeze chat";
+}
+.callSection {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.callSection .audioCall {
+  --display: none;
+  border-radius: 50%;
+}
+.callSection .audioCall::after {
+  content: "Start a voice call";
+}
+.callSection .videoCall {
+  --display: none;
+  border-radius: 50%;
+}
+.callSection .videoCall::after {
+  content: "Start a video call";
+}
+.functionalButtonContainer {
+  display: flex;
+  height: auto;
+  width: auto;
+  align-items: center;
+  justify-content: center;
+  --timer: 850ms;
+}
+.functionalButtons {
+  position: relative;
+  height: 27px;
+  width: 27px;
+}
+.functionalButtons:hover {
+  background-color: rgba(128, 128, 128, 0.452);
+  animation: timer var(--timer) linear forwards;
+}
+.functionalButtons::after {
+  position: absolute;
+  display: var(--display);
+  align-items: center;
+  padding: 0.35em;
+  z-index: 1;
+  font-size: smaller;
+  font-weight: 500;
+  height: max-content;
+  width: max-content;
+  color: black;
+  animation: fadeIN var(--timer) linear forwards;
+  background-color: rgb(207, 203, 203);
+  top: -2rem;
+  left: 0;
+  border-radius: 5px;
+}
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 0.01em solid gray;
+}
+.heading .title {
+  margin: 0;
+  padding: 1em;
+}
+.messageBody {
+  position: relative;
+  height: 350px;
+}
+#receiversImage,
+#sendersImage {
+  padding: 0;
+  width: min-content;
+  padding-top: 0.2em;
+  margin: 0;
+  margin-top: 0.1em;
+}
+.messageLink {
+  color: white;
+}
+.preview {
+  position: relative;
+  bottom: -0.3em;
+  height: 100%;
+  max-height: 5rem;
+  width: 100%;
+}
+.linkMessage {
+  width: 100px;
+}
+.linkMessage p {
+  margin: 0;
+  padding: 0;
+}
+.emojiPicker {
+  z-index: 999;
+  position: absolute;
+  bottom: 2rem;
+  left: 0;
+}
+#sender {
+  justify-content: flex-end;
+}
+#receiver {
+  justify-content: flex-start;
+}
+#receiver :global .fa-check-circle-o {
+  display: none;
+}
+.messageBodyContainer {
+  height: inherit;
+  width: inherit;
+}
+.chatBody {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+.messageArea {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.scrollButton {
+  height: 40px !important;
+  width: 40px !important;
+  aspect-ratio: 1 !important;
+  border-radius: 50% !important;
+  position: absolute;
+  z-index: 10;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  right: 50% !important;
+  transform: translate(50%);
+}
+.scrollButton::after {
+  position: absolute;
+  height: 40px !important;
+  width: 40px !important;
+  content: url("http://192.168.1.75:3001/images/downArrow.svg");
+
+  font-size: large;
+  top: 0.5em;
+  color: blue;
+  z-index: 11;
+}
+.check {
+  bottom: 5px;
+  position: absolute;
+  bottom: 10px;
+  right: -12px;
+}
+.messageContainer {
+  display: flex;
+  gap: 0.1em;
+  align-items: flex-end;
+  position: relative;
+  margin-inline-end: 0.9em;
+}
+.message {
+  display: block;
+  position: relative;
+  padding: 0.2em;
+  color: white;
+  margin: 0.1em;
+  border: 1px solid var(--color);
+  border-radius: 5px;
+  width: max-content;
+  max-width: 70%;
+  overflow: hidden;
+}
+.sender {
+  justify-self: flex-end;
+  background-color: blue;
+  --color: blue;
+}
+.receiver {
+  justify-self: start;
+  background-color: gray;
+  --color: gray;
+}
+.inputContainer {
+  --ui-Color: blue;
+  display: grid;
+  gap: 0.1em;
+  position: relative;
+  align-items: center;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  bottom: 1%;
+  direction: rtl;
+}
+.inputContainer .inputOption {
+  height: 1.7em;
+  width: 1.7em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.inputContainer .inputOption:hover {
+  background-color: rgba(128, 128, 128, 0.256);
+  border-radius: 50%;
+}
+.inputContainer .inputOption input {
+  position: absolute;
+  opacity: 0;
+  height: inherit;
+  width: inherit;
+  border-radius: 50%;
+}
+.messageInput {
+  display: flex;
+  position: relative;
+  direction: ltr;
+  grid-column: 2/3;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(80, 80, 80);
+  border-radius: 100px;
+  caret-color: black;
+}
+.messageInput .message_input {
+  border-top-left-radius: 100px;
+  border-bottom-left-radius: 100px;
+  padding: 0.3rem;
+  background-color: transparent;
+  transition: 150ms;
+  cursor: pointer;
+  margin-inline: 0;
+  width: 8rem;
+}
+.messageInput .message_input::placeholder {
+  color: rgb(171, 168, 168);
+  font-weight: bold;
+}
+.messageInput .emojiContainer {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+  border-top-right-radius: 100px;
+  border-bottom-right-radius: 100px;
+  padding-inline: 0.2em;
+  margin-right: 0.2em;
+}
+.messageInput .emojiContainer:hover {
+  width: max-content;
+  aspect-ratio: 1;
+  background-color: rgba(45, 44, 44, 0.256);
+  border-radius: 50%;
+}
+.variousSvgInput {
+  fill: var(--ui-Color);
+}
+.photoSvg {
+  stroke: var(--ui-Color);
+}
+.selectedImagePreview {
+  width: 15.75rem;
+  --display: none;
+  display: flex;
+  overflow: hidden;
+  overflow-x: auto;
+  align-items: center;
+  display: none;
+  gap: 0.5rem;
+  position: absolute;
+  top: -5.5rem;
+  left: 0.5em;
+  scrollbar-width: none;
+  height: 5rem;
+}
+.imageContainer {
+  overflow: hidden;
+  position: relative;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  height: 50px;
+  width: 50px;
+  border-radius: 10px;
+  /* margin-bottom: 1em; */
+}
+.imageContainerForCrossButton,
+.imagePlaceholder {
+  height: 50px;
+  width: 50px;
+  display: flex;
+  position: relative;
+  align-items: flex-start;
+}
+.imageContainerForCrossButton .crossButtonContainer,
+.imagePlaceholder .crossButtonContainer {
+  width: 1.5em;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5em;
+  background-color: rgb(91, 87, 87);
+  border-radius: 50%;
+  position: absolute;
+  top: -0.4em;
+  right: -0.4em;
+}
+.imageContainerForCrossButton .crossButtonContainer:hover,
+.imagePlaceholder .crossButtonContainer:hover {
+  background-color: rgb(115, 113, 113);
+}
+.image {
+  height: 50px;
+  aspect-ratio: 1;
+  min-height: 50px;
+}
+.previewImages {
+  display: none;
+}
+.logoContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+  align-items: center;
+  height: 50px;
+  width: 50px;
+  background-color: rgb(102, 101, 101);
+  border-radius: 10px;
+}
+.logoContainer:hover {
+  background-color: rgb(121, 121, 121);
+}
+.photoInput {
+  position: absolute;
+  opacity: 0;
+  height: 50px;
+  width: 50px;
+}
+.selectFileLogo {
+  background-image: url(http://192.168.1.75:3001/images/allLogos.png);
+  background-position: 0px -64px;
+  background-size: 34px 838px;
+  filter: invert(100%);
+  width: 25px;
+  height: 25px;
+  background-repeat: no-repeat;
+  display: inline-block;
+}
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  right: 80%;
+  padding: 0;
+  height: 5px;
+  width: 50px;
+  /* overflow: hidden; */
+
+  background-color: blue;
+  transition: all 500ms ease-in;
+}
+.images {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 0.5em;
+  row-gap: 0.2em;
+  padding: 0.2em;
+}
+.chatImagesHolder {
+  margin: 0;
+  padding: 0;
+}
+.chatImagesHolder > img {
+  height: 55px;
+  width: 55px;
+}
+.loadingProgressBar {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 0.01em solid rgb(170, 167, 167);
+}
+.loadingProgressBar span {
+  height: 100%;
+  width: 100%;
+  background-color: blue;
+  transition: all 1s;
+}
+.loadingProgressBar p {
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  position: absolute;
+  margin: 0px;
+  padding: 0px;
+  height: 70%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-color: white;
+  border: 0.01em solid rgb(170, 167, 167);
+}
