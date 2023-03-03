@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+@layer components {
+  .navbarIcons {
+    @apply cursor-pointer hover:scale-110 md:hover:underline decoration-blue-500;
+  }
+  .socials {
+    @apply h-10 w-10 md:h-14 md:w-14 bg-white/50 hover:bg-white transition-all duration-150 rounded-full grid place-items-center;
+  }
+}

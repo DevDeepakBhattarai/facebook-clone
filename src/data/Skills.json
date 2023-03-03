@@ -1,0 +1,34 @@
+[
+  {
+    "logo": "/js.png",
+    "completeness": "95%"
+  },
+  {
+    "logo": "/react.png",
+    "completeness": "70%"
+  },
+  {
+    "logo": "/next.png",
+    "completeness": "70%"
+  },
+  {
+    "logo": "/node.png",
+    "completeness": "90%"
+  },
+  {
+    "logo": "/mysql.png",
+    "completeness": "70%"
+  },
+  {
+    "logo": "/html.png",
+    "completeness": "90%"
+  },
+  {
+    "logo": "/css.png",
+    "completeness": "70%"
+  },
+  {
+    "logo": "/tailwindcss.svg",
+    "completeness": "95%"
+  }
+]
