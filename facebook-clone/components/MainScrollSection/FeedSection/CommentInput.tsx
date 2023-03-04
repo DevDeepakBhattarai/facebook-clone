@@ -105,7 +105,6 @@ export default function CommentInput({
             if (event.key === "Enter") {
               event.preventDefault();
               submitComment();
-              // console.log("HEllo");
             }
           }}
           autoFocus

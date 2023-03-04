@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import Popup from "reactjs-popup";
 import { AppDispatch, RootState } from "../../src/store";
 import {
-  doneUploadingProfile,
   profilePicSelected,
   decrementZoomLevel,
   setZoomLevel,
@@ -25,8 +24,9 @@ import ProfileUploadingSectionImage from "./ProfileUploadingSectionImage";
 import { PostsRoute, ProfileRoute } from "../../Routes";
 import axios from "axios";
 import html2canvas from "html2canvas";
-import { zIndex } from "html2canvas/dist/types/css/property-descriptors/z-index";
 import { dataURLtoBlob } from "../../utils/dataURLToBlob";
+
+
 
 export default function UploadProfile() {
   const {

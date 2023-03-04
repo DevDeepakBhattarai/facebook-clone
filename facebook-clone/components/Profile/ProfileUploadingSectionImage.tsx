@@ -45,20 +45,17 @@ export default function ProfileUploadingSectionImage({
           left: -120,
           right: 120,
         });
+        
         // create a canvas element to draw the resized image on
         var canvas = document.createElement("canvas");
         canvas.width = newWidth;
         canvas.height = newHeight;
-
         // get the drawing context for the canvas
         var ctx = canvas.getContext("2d");
-
         // draw the image onto the canvas with the new height and width
         ctx?.drawImage(img, 0, 0, newWidth, newHeight);
-
         // get the resized dataURL from the canvas
         var resizedDataURL = canvas.toDataURL();
-
         // use the resized dataURL as needed
         setImageURL(resizedDataURL);
       } else {

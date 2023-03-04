@@ -48,8 +48,8 @@ callStart(io);
 
 app.use("/chatImages", express.static("chatImages"));
 app.use("/stories", express.static("stories"));
+app.use("/profile",express.static("profile"));
 app.use("/posts", express.static("posts"));
-app.use("/profile", express.static("profile"));
 app.use(storageRouter);
 app.use("/login", loginRouter);
 app.use("/register/", registerRouter);
