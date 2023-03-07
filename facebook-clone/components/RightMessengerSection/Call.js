@@ -1,28 +1,18 @@
 import React, { useLayoutEffect } from "react";
+import { motion } from "framer-motion";
 import { useState, useRef, useEffect, useCallback } from "react";
-import style from "../../styles/call.module.css";
 import { usePeer } from "../../context/PeerContext";
 import { useRouter } from "next/router";
 
 export default function Call({ socket, userId }) {
   const router = useRouter();
   if (!router.query.user_to_ring || !router.query.room_name) {
-    console.log("Hello");
-    router.push("/");
+    // router.push("/");
   }
   const param = router.query;
   const roomName = useRef(param.room_name);
   const userToCall = useRef(param.user_to_ring);
   const [isMyVideoExpanded, setIsMyVideoExpanded] = useState(false);
-
-  const position = useRef();
-  useEffect(() => {
-    position.current = {
-      LOWER_LIMIT: 0,
-      UPPER_HEIGHT_LIMIT: window.innerHeight - 50,
-      UPPER_WIDTH_LIMIT: window.innerWidth - 50,
-    };
-  });
 
   const {
     peer,
@@ -34,15 +24,14 @@ export default function Call({ socket, userId }) {
     senders,
   } = usePeer();
 
-  console.log(peer);
   const [isCallAccepted, setIsCallAccepted] = useState(false);
   const [stream, setStream] = useState();
   const myVideoElement = useRef();
-  const peerVideoElement = useRef();
+  const peerVideo = useRef();
   const myVideoContainer = useRef();
   const peerVideoContainer = useRef();
   const callData = useRef();
-
+  const screen = useRef();
   const muteButton = useRef();
   const stopVideoButton = useRef();
   const seeAllParticipant = useRef();
@@ -51,10 +40,13 @@ export default function Call({ socket, userId }) {
 
   const timer = useRef();
 
+  document.querySelector(".nav-bar").style.display = "none";
+
   useLayoutEffect(() => {
     const handler = () => {
       peer.close();
     };
+
     callData.current = localStorage.getItem("from");
     localStorage.removeItem("from");
 
@@ -64,26 +56,15 @@ export default function Call({ socket, userId }) {
         if (myVideoElement.current) myVideoElement.current.srcObject = stream;
         setStream(stream);
       });
-    window.addEventListener("beforeunload", handler);
 
-    if (
-      myVideoContainer.current &&
-      !myVideoContainer.current.classList.contains(style.peerVideoContainer)
-    ) {
-      myVideoContainer.current.addEventListener("dragstart", dragStart);
-      myVideoContainer.current.addEventListener("dragend", dragHandler);
-      myVideoContainer.current.addEventListener("drag", dragHandler);
-      myVideoContainer.current.addEventListener(
-        "touchstart",
-        touchStartHandler
-      );
-      myVideoContainer.current.addEventListener("touchend", touchEndHandler);
-    }
+    window.addEventListener("beforeunload", handler);
   }, []);
 
   useEffect(() => {
-    if (peerStream) peerVideoElement.current.srcObject = peerStream;
-  }, [peerStream]);
+    if (peerVideo && peerStream) {
+      peerVideo.current.srcObject = peerStream;
+    }
+  }, [peerStream, peerVideo.current]);
 
   //*Handle Initial Enter
   useEffect(() => {
@@ -95,7 +76,7 @@ export default function Call({ socket, userId }) {
       acceptCall(data.offer);
       localStorage.removeItem("callerData");
     } else {
-      router.push("/");
+      // router.push("/");
     }
   }, []);
 
@@ -140,7 +121,11 @@ export default function Call({ socket, userId }) {
   useEffect(() => {
     const handler = async () => {
       const offer = await peer.createOffer();
-      await peer.setLocalDescription(offer);
+      try {
+        await peer.setLocalDescription(offer);
+      } catch (error) {
+        console.log(error);
+      }
 
       socket.emit("negotiationNeeded", {
         roomName: roomName.current,
@@ -150,26 +135,33 @@ export default function Call({ socket, userId }) {
 
     const negotiationHandler = async (data) => {
       await peer.setRemoteDescription(data.offer);
-
+      console.log("I did");
+      console.log(peer.iceConnectionState);
       const answer = await peer.createAnswer(data.offer);
-      await peer.setLocalDescription(answer);
+      try {
+        await peer.setLocalDescription(answer);
+      } catch (error) {
+        console.log(error);
+      }
       socket.emit("callAccepted", {
         roomName: roomName.current,
         answer: peer.localDescription,
       });
     };
+
     const callEndHandler = () => {
       peer.close();
       window.close();
     };
+
     socket.on("callEnded", callEndHandler);
     socket.on("negotiationNeeded", negotiationHandler);
-
     peer.addEventListener("negotiationneeded", handler);
 
     return () => {
       peer.removeEventListener("negotiationneeded", handler);
       socket.off("callEnded", callEndHandler);
+      socket.off("negotiationNeeded", negotiationHandler);
     };
   }, []);
 
@@ -204,6 +196,7 @@ export default function Call({ socket, userId }) {
       stopVideoButton.current.innerHTML = "Stop video";
     }
   };
+
   const endCall = useCallback(async () => {
     await new Promise((resolve) => {
       socket.emit("callEnded", { roomName: roomName.current });
@@ -234,173 +227,76 @@ export default function Call({ socket, userId }) {
     }
   }, [isCallAccepted]);
 
-  function dragHandler(e) {
-    if (
-      !(e.clientX - 50 < 0) &&
-      !(e.clientX > position.current.UPPER_WIDTH_LIMIT)
-    )
-      e.target.style.left = `${e.clientX - 50}px`;
-    if (
-      !(e.clientY - 40 < 0) &&
-      !(e.clientY > position.current.UPPER_HEIGHT_LIMIT)
-    )
-      e.target.style.top = `${e.clientY - 50}px`;
-  }
+  // const peerToClientVideoSwitcher = () => {
+  //   setIsMyVideoExpanded(false);
+  //   if (
+  //     !peerVideoContainer.current.classList.contains(style.peerVideoContainer)
+  //   ) {
+  //     myVideoContainer.current.classList.remove(style.peerVideoContainer);
+  //     myVideoContainer.current.draggable = "true";
+  //     myVideoContainer.current.classList.add(style.myVideoContainer);
 
-  const clientToPeerVideoSwitcher = useCallback((e) => {
-    setIsMyVideoExpanded(true);
+  //     if (peerVideoContainer.current) {
+  //       peerVideoContainer.current.classList.add(style.peerVideoContainer);
+  //       peerVideoContainer.current.draggable = "false";
+  //       peerVideoContainer.current.classList.remove(style.myVideoContainer);
+  //     }
+  //   }
+  // };
 
-    if (
-      !myVideoContainer.current.classList.contains(style.peerVideoContainer)
-    ) {
-      myVideoContainer.current.classList.add(style.peerVideoContainer);
-      myVideoContainer.current.draggable = "false";
-      myVideoContainer.current.classList.remove(style.myVideoContainer);
+  // const clientToPeerVideoSwitcher = useCallback((e) => {
+  //   setIsMyVideoExpanded(true);
 
-      if (peerVideoContainer.current) {
-        peerVideoContainer.current.classList.remove(style.peerVideoContainer);
-        peerVideoContainer.current.draggable = "true";
-        peerVideoContainer.current.classList.add(style.myVideoContainer);
-      }
-    }
-  }, []);
+  //   if (
+  //     !myVideoContainer.current.classList.contains(style.peerVideoContainer)
+  //   ) {
+  //     myVideoContainer.current.classList.add(style.peerVideoContainer);
+  //     myVideoContainer.current.draggable = "false";
+  //     myVideoContainer.current.classList.remove(style.myVideoContainer);
 
-  useEffect(() => {
-    const peerVid = peerVideoContainer;
-    const myVid = myVideoContainer;
-    if (
-      isMyVideoExpanded &&
-      peerVideoContainer.current &&
-      myVideoContainer.current
-    ) {
-      peerVideoContainer.current.draggable = true;
-      peerVideoContainer.current.addEventListener("dragstart", dragStart);
-      peerVideoContainer.current.addEventListener("dragend", dragHandler);
-      peerVideoContainer.current.addEventListener("drag", dragHandler);
-      peerVideoContainer.current.addEventListener(
-        "touchstart",
-        touchStartHandler
-      );
-      peerVideoContainer.current.addEventListener("touchend", touchEndHandler);
-    } else if (
-      !isMyVideoExpanded &&
-      peerVideoContainer.current &&
-      myVideoContainer.current
-    ) {
-      myVideoContainer.current.addEventListener("dragstart", dragStart);
-      myVideoContainer.current.addEventListener("dragend", dragHandler);
-      myVideoContainer.current.addEventListener("drag", dragHandler);
-      myVideoContainer.current.addEventListener(
-        "touchstart",
-        touchStartHandler
-      );
-      myVideoContainer.current.addEventListener("touchend", touchEndHandler);
-      myVideoContainer.current.draggable = true;
-    }
-    return () => {
-      if (peerVid.current) {
-        peerVid.current.removeEventListener("dragstart", dragStart);
-        peerVid.current.removeEventListener("dragend", dragHandler);
-        peerVid.current.removeEventListener("drag", dragHandler);
-        peerVid.current.removeEventListener("touchstart", touchStartHandler);
-        peerVid.current.removeEventListener("touchend", touchEndHandler);
-        peerVid.current.draggable = false;
-      }
+  //     if (peerVideoContainer.current) {
+  //       peerVideoContainer.current.classList.remove(style.peerVideoContainer);
+  //       peerVideoContainer.current.draggable = "true";
+  //       peerVideoContainer.current.classList.add(style.myVideoContainer);
+  //     }
+  //   }
+  // }, []);
 
-      if (myVid.current) {
-        myVid.current.removeEventListener("dragend", dragHandler);
-        myVid.current.removeEventListener("drag", dragHandler);
-        myVid.current.removeEventListener("touchstart", touchStartHandler);
-        myVid.current.removeEventListener("touchend", touchEndHandler);
-        myVid.current.removeEventListener("dragstart", dragStart);
-        myVid.current.draggable = false;
-      }
-    };
-  }, [isMyVideoExpanded]);
-
-  const peerToClientVideoSwitcher = () => {
-    setIsMyVideoExpanded(false);
-    if (
-      !peerVideoContainer.current.classList.contains(style.peerVideoContainer)
-    ) {
-      myVideoContainer.current.classList.remove(style.peerVideoContainer);
-      myVideoContainer.current.draggable = "true";
-      myVideoContainer.current.classList.add(style.myVideoContainer);
-
-      if (peerVideoContainer.current) {
-        peerVideoContainer.current.classList.add(style.peerVideoContainer);
-        peerVideoContainer.current.draggable = "false";
-        peerVideoContainer.current.classList.remove(style.myVideoContainer);
-      }
-    }
-  };
-  function dragStart(e) {
-    e.dataTransfer.effectAllowed = "copyMove";
-    var img = document.createElement("img");
-    img.src = "";
-    e.dataTransfer.setDragImage(img, 0, 0);
-  }
-  function touchMoveHandler(e) {
-    // grab the location of touch
-    const { pageX, pageY } = e.targetTouches[0];
-
-    // assign box new coordinates based on the touch.
-    if (!(pageX - 50 < 0) && !(pageX > position.current.UPPER_WIDTH_LIMIT))
-      myVideoContainer.current.style.left = `${pageX - 50}px`;
-    peerVideoContainer.current.style.left = `${pageX - 50}px`;
-    if (!(pageY - 40 < 0) && !(pageY > position.current.UPPER_HEIGHT_LIMIT))
-      myVideoContainer.current.style.top = `${pageY - 50}px`;
-    peerVideoContainer.current.style.top = `${pageY - 50}px`;
-  }
-
-  function touchStartHandler(e) {
-    timer.current = setTimeout(() => {
-      e.target.style.border = "1px solid red";
-      window.addEventListener("touchmove", touchMoveHandler);
-    }, 500);
-  }
-  function touchEndHandler(e) {
-    clearTimeout(timer.current);
-    e.target.style.border = "none";
-
-    window.removeEventListener("touchmove", touchMoveHandler);
-  }
-
-  return router.query.user_to_ring && router.query.room_name ? (
-    <div>
-      <div
+  return router.query.room_name ? (
+    <div ref={screen} className="h-screen w-screen">
+      <motion.div
+        className="h-full w-full"
+        dragConstraints={screen}
         onClick={clientToPeerVideoSwitcher}
-        draggable
+        drag
         ref={myVideoContainer}
-        className={style.myVideoContainer}
       >
         <video
           src=""
+          className="h-full w-full"
           playsInline
           muted
           autoPlay
-          className={style.myVideo}
           ref={myVideoElement}
         ></video>
-      </div>
-
+      </motion.div>
       {isCallAccepted && (
-        <div
-          onClick={peerToClientVideoSwitcher}
-          className={style.peerVideoContainer}
+        <motion.div
+          drag
+          className="w-max absolute z-50 "
+          dragConstraints={screen}
           ref={peerVideoContainer}
         >
           <video
             src=""
             playsInline
             autoPlay
-            className={style.peerVideo}
-            ref={peerVideoElement}
+            className="h-16 aspect-video"
+            ref={peerVideo}
           ></video>
-        </div>
+        </motion.div>
       )}
-
-      <div className={style.functionalButtonContainer}>
+      <div>
         <button onClick={muteStream} ref={muteButton}>
           Mute
         </button>

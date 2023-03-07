@@ -12,6 +12,7 @@ const db = mysql.createConnection({
   host: process.env.HOST,
   database: "facebook",
   password: process.env.DB_PASS,
+  connectTimeout: 30000,
 });
 
 const sessionStore = new MySQLStore({

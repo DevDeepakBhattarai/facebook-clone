@@ -50,10 +50,10 @@ export default function Friends({ socket }) {
     };
     socket?.on("beingCalled", handler);
 
-    // return () => {
-    //   socket.off('beingCalled',handler)
-    // }
-  }, []);
+    return () => {
+      socket?.off("beingCalled", handler);
+    };
+  }, [socket]);
 
   const CallAlert = () => {
     return (
@@ -67,9 +67,11 @@ export default function Friends({ socket }) {
   };
 
   useEffect(() => {
-    socket?.on("userConnected", (data) => {
+    const userConnectHandler = (data) => {
+      console.log(data);
       setSocketIdOfFriends((prev) => [...prev, data]);
-    });
+    };
+    socket?.on("userConnected", userConnectHandler);
 
     axios
       .post(FriendsRoute, { userId })
@@ -82,7 +84,11 @@ export default function Friends({ socket }) {
       .catch((e) => {
         console.log(e);
       });
-  }, [userId]);
+
+    return () => {
+      socket?.off("userConnected", userConnectHandler);
+    };
+  }, [socket, userId]);
 
   return !isFriendAvailable ? null : (
     <>

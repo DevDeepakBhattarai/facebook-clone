@@ -57,6 +57,7 @@ const db = mysql.createConnection({
   host: process.env.HOST,
   database: "facebook",
   password: "Deepak",
+  connectTimeout: 30000,
 });
 
 router.get("/posts/:userId", (req, res) => {

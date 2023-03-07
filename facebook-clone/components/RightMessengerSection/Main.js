@@ -6,6 +6,7 @@ import Group from "./Group";
 import Birthday from "./Birthday";
 
 export default function Main({ socket }) {
+  console.log(socket);
   return (
     <div className="right-section">
       <Sponsored></Sponsored>

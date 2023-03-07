@@ -53,7 +53,6 @@ const Title = () => {
 export async function getServerSideProps(context: any) {
   let { req } = context;
   let cookie = req.headers.cookie;
-  console.log(cookie);
   const headers = {
     Cookie: cookie || {},
     "Content-Type": "application/json",

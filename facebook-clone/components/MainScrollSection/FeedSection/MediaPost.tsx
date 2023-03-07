@@ -34,7 +34,6 @@ export default function Posts({
   hasLiked,
   additional_comment,
 }: Post) {
-  console.log(additional_comment);
   const controls = useAnimation();
   const { userId } = useSelector((store: RootState) => store.auth);
   const [isCommenting, setIsCommenting] = useState(false);
@@ -160,7 +159,6 @@ export default function Posts({
     </div>
   );
   async function likeHandler() {
-    console.log("hello");
     setIsLiked((prev) => !prev);
     if (!isLiked) {
       await controls.start({

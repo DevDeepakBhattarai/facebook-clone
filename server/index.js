@@ -25,7 +25,6 @@ app.use(
 );
 
 const server = http.createServer(app);
-server.timeout = 30000;
 
 const io = new Server(server, {
   cors: {
@@ -33,10 +32,11 @@ const io = new Server(server, {
     methods: ["GET", "POST", "PATCH", "DELETE"],
   },
 });
+
 io.on("connection", (socket) => {
   socket.emit("id", socket.id);
   console.log(`User connected: ${socket.id}`);
-
+  console.log(socket.handshake.headers.id);
   socket.broadcast.emit("userConnected", {
     socketId: socket.id,
     facebookId: socket.handshake.headers.id,
@@ -48,7 +48,7 @@ callStart(io);
 
 app.use("/chatImages", express.static("chatImages"));
 app.use("/stories", express.static("stories"));
-app.use("/profile",express.static("profile"));
+app.use("/profile", express.static("profile"));
 app.use("/posts", express.static("posts"));
 app.use(storageRouter);
 app.use("/login", loginRouter);

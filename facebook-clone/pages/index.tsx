@@ -12,36 +12,39 @@ import { AppDispatch, RootState } from "../src/store";
 import { resetState } from "../src/storySlice";
 
 function connectWithSocket(isAuth: any, userId: any) {
-  if (isAuth) {
-    // @ts-ignore
-    let socket = io.connect(Main, {
-      extraHeaders: {
-        id: userId,
-      },
-    });
-    return socket;
-  } else {
-    return null;
+  try {
+    if (isAuth) {
+      // @ts-ignore
+      let socket = io.connect(Main, {
+        extraHeaders: {
+          id: userId,
+        },
+      });
+      return socket;
+    } else {
+      return null;
+    }
+  } catch (err) {
+    console.log(err);
   }
 }
 export default function Home({ data }: any) {
   const dispatch = useDispatch<AppDispatch>();
   const controller = useRef<boolean>(true);
+  const [socket, setSocket] = useState<any>();
+
   useEffect(() => {
     dispatch(resetState());
     if (controller.current) {
       dispatch(setData(data));
 
-      if (data.isAuth) setSocket(connectWithSocket(data.userId, data.isAuth));
+      if (data.isAuth) setSocket(connectWithSocket(data.isAuth, data.userId));
     }
     return () => {
       controller.current = false;
       socket?.disconnect();
     };
   }, []);
-
-  const [socket, setSocket] = useState<any>();
-  const { userId, isAuth } = useSelector((store: RootState) => store.auth);
 
   return (
     <>
