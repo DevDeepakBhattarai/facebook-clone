@@ -5,6 +5,8 @@ import { FriendsRoute, MessageRoute } from "../../Routes";
 import Popup from "reactjs-popup";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faMultiply } from "@fortawesome/free-solid-svg-icons";
 
 export default function Friends({ socket }) {
   const [name, setName] = useState([]);
@@ -13,7 +15,6 @@ export default function Friends({ socket }) {
   const { userId } = useSelector((store) => store.auth);
   const [messages, setMessages] = useState([]);
   const [isChatLoaded, setIsChatLoaded] = useState(false);
-  const [socketIdOfFriends, setSocketIdOfFriends] = useState([]);
 
   const otherUser = useRef();
   const userName = useRef();
@@ -22,7 +23,6 @@ export default function Friends({ socket }) {
 
   const [isBeingCalled, setIsBeingCalled] = useState(false);
   const callerData = useRef();
-  const url = useRef();
 
   const callAccepter = useCallback(() => {
     setIsBeingCalled(false);
@@ -57,10 +57,54 @@ export default function Friends({ socket }) {
 
   const CallAlert = () => {
     return (
-      <Popup open={isBeingCalled} position={"center center"}>
-        <div>
-          <button onClick={callAccepter}>Accept</button>
-          <button onClick={callRejecter}>Reject</button>
+      <Popup
+        open={isBeingCalled}
+        position={"center center"}
+        closeOnDocumentClick={false}
+      >
+        <audio className="invisible" src="/callalert.mp3" autoPlay loop></audio>
+        <div className="bg-dark rounded-lg relative p-4 space-y-8 w-96 shadow-full border border-gray-300/40">
+          <div
+            onClick={() => {
+              setIsBeingCalled(false);
+            }}
+            className="absolute grid place-items-center top-4 right-4 h-10 w-10 rounded-full bg-gray-400"
+          >
+            <FontAwesomeIcon icon={faMultiply}></FontAwesomeIcon>
+          </div>
+
+          <div className="flex mx-auto justify-center h-16 w-16 rounded-full overflow-hidden">
+            <img
+              src={callerData.current?.profile}
+              className="object-cover"
+              alt=""
+            />
+          </div>
+          <div className="text-3xl w-full font-bold text-gray-200 text-center">
+            {callerData.current?.userName} is calling you
+          </div>
+          <div className="text-sm text-gray-400 text-center ">
+            The call will start as soon as you accept
+          </div>
+          <div className="flex items-center justify-center gap-16  text-white text-lg">
+            <button onClick={callRejecter}>
+              <div className="h-12 w-12 rounded-full bg-red-500 text-center grid place-items-center text-2xl">
+                <FontAwesomeIcon icon={faMultiply}></FontAwesomeIcon>
+              </div>
+              Reject
+            </button>
+
+            <button
+              autoFocus
+              onClick={callAccepter}
+              className="flex flex-col justify-center items-center  text-white"
+            >
+              <div className="h-12 w-12 rounded-full bg-green-400 text-center grid place-items-center text-2xl">
+                <FontAwesomeIcon icon={faCheck}></FontAwesomeIcon>
+              </div>
+              Accept
+            </button>
+          </div>
         </div>
       </Popup>
     );
@@ -68,8 +112,11 @@ export default function Friends({ socket }) {
 
   useEffect(() => {
     const userConnectHandler = (data) => {
-      console.log(data);
-      setSocketIdOfFriends((prev) => [...prev, data]);
+      document.querySelectorAll(".friends").forEach((friend) => {
+        if (friend.id === data.facebookId) {
+          friend.setAttribute("data-socket", data.socketId);
+        }
+      });
     };
     socket?.on("userConnected", userConnectHandler);
 
@@ -144,17 +191,11 @@ export default function Friends({ socket }) {
           <div> Friend not found </div>
         ) : (
           name.map((element) => {
-            let socketId = socketIdOfFriends.find(
-              (data) => Number(data.facebookId) === Number(element.user_id)
-            );
-
-            let userName = `${element.first_name} ${element.last_name}`;
-
             return (
               <li
                 onClick={handler}
                 id={`${element.user_id}`}
-                data-socket={`${socketId?.socketId}`}
+                data-socket={element.socket_id}
                 className="friends"
                 key={element.user_id}
               >
@@ -165,7 +206,7 @@ export default function Friends({ socket }) {
                     alt=""
                   />
                 </span>
-                <span className="user_name">{userName}</span>
+                <span className="user_name">{`${element.first_name} ${element.last_name}`}</span>
               </li>
             );
           })

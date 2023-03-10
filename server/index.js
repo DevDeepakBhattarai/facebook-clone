@@ -1,7 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const http = require("http");
 const cors = require("cors");
+const mysql = require("mysql2");
 const storageRouter = require("./routes/storage");
 const { callRouter, callStart } = require("./routes/call");
 const loginRouter = require("./routes/login");
@@ -14,6 +16,14 @@ const storiesRoute = require("./routes/stories");
 const requestRouter = require("./routes/request");
 const { Server } = require("socket.io");
 const postsRouter = require("./routes/posts");
+
+const db = mysql.createConnection({
+  user: "Deepak",
+  host: process.env.HOST,
+  database: "facebook",
+  password: "Deepak",
+  connectTimeout: 30000,
+});
 
 app.use(express.json());
 app.use(
@@ -32,8 +42,21 @@ const io = new Server(server, {
     methods: ["GET", "POST", "PATCH", "DELETE"],
   },
 });
+const onlineStatusQuery = `
+insert into online_users values(?,?,?)
+ON DUPLICATE KEY UPDATE socket_id = ?, online_status =?
+`;
 
 io.on("connection", (socket) => {
+  if (socket.handshake.headers.id) {
+    db.query(
+      onlineStatusQuery,
+      [socket.handshake.headers.id, socket.id, true, socket.id, true],
+      (err) => {
+        if (err) console.log(err);
+      }
+    );
+  }
   socket.emit("id", socket.id);
   console.log(`User connected: ${socket.id}`);
   console.log(socket.handshake.headers.id);
@@ -51,7 +74,7 @@ app.use("/stories", express.static("stories"));
 app.use("/profile", express.static("profile"));
 app.use("/posts", express.static("posts"));
 app.use(storageRouter);
-app.use("/login", loginRouter);
+app.use(loginRouter);
 app.use("/register/", registerRouter);
 app.use("/groups", groupRouter);
 app.use("/friends/", friendsRouter);

@@ -14,34 +14,28 @@ module.exports = {
   callRouter: router,
   callStart: function (io) {
     io.on("connection", function (socket) {
-      // socket.on('socketMap',data=>{
-      //     db.query('select * from user_id_to_socketid where user_id=?',[data.userId],(err,result)=>{
-      //         if(err){
-      //             console.log(err)
-      //         }
-      //         if(!result.length>0){
-      //             let sql="insert into user_id_to_socketid values(?,?))";
-      //             db.query(sql,[data.userId,socket.id])
-      //         }
-      //         else{
-      //          let sql="update user_id_to_socketid set socket_id=? where user_id=?";
-      //          db.query(sql,[socket.id,data.userId])
-      //         }
-
-      //     })
-
-      // })
-
       socket.on("joinCallRoom", (data) => {
         socket.join(data.roomName);
       });
 
       socket.on("callUser", (data) => {
-        socket.to(data.userToCall).emit("beingCalled", {
-          offer: data.offer,
-          roomName: data.roomName,
-          negotiationneeded: data.negotiationneeded,
-        });
+        db.query(
+          "select profile_pic, first_name,last_name from user_data where user_id =?",
+          [data.from],
+          (err, result) => {
+            if (err) {
+              console.log(err);
+              return;
+            }
+            socket.to(data.userToCall).emit("beingCalled", {
+              userName: `${result[0].first_name} ${result[0].last_name}`,
+              profile: result[0].profile_pic,
+              offer: data.offer,
+              roomName: data.roomName,
+              negotiationneeded: data.negotiationneeded,
+            });
+          }
+        );
       });
 
       socket.on("callAccepted", (data) => {

@@ -38,7 +38,13 @@ router.use(
   })
 );
 
-router.post("/", (req, res) => {
+router.post("/logout", (req, res) => {
+  req.session.destroy();
+  res.clearCookie("connect-sid");
+  res.send("Done");
+});
+
+router.post("/login", (req, res) => {
   res.clearCookie("token");
   if (req.session?.isAuth) {
     db.query(

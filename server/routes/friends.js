@@ -14,7 +14,7 @@ router.post("/", (req, res) => {
   const { userId } = req.body;
 
   let sql = `
-  select user_data.user_id,first_name,last_name,profile_pic from user_data
+  select user_data.user_id,first_name,last_name,profile_pic,socket_id from user_data
   JOIN ( 
   select friend_id ,user_id from friends as T1 
   JOIN json_table(
@@ -23,9 +23,9 @@ router.post("/", (req, res) => {
   ) AS T2
   where T1.user_id=?
   ) AS result
+  left join online_users on online_users.user_id = result.friend_id
   ON result.friend_id=user_data.user_id
   where result.user_id=?;
-    ;
     `;
   db.query(sql, [userId, userId], async (error, Result) => {
     if (error) {

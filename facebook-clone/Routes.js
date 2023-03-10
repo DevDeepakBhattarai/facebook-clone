@@ -1,5 +1,6 @@
 export const Main = "http://192.168.1.75:3001";
 export const LoginRoute = "http://192.168.1.75:3001/login";
+export const LogoutRoute = "http://192.168.1.75:3001/logout";
 export const RegisterRoute = "http://192.168.1.75:3001/register";
 export const FriendsRoute = "http://192.168.1.75:3001/friends";
 export const GroupRoute = "http://192.168.1.75:3001/groups";
