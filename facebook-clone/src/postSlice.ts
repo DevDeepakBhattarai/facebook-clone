@@ -19,7 +19,10 @@ export interface Post {
 }
 type initialStateType = {
   posts: Post[] | [];
+  hasMore: boolean;
+  page: number;
   isPopupForCreatingPostOpen: boolean;
+  loading: boolean;
   isAddingPhotos: boolean;
   caption: string;
   photos: [] | string[];
@@ -28,7 +31,10 @@ type initialStateType = {
 const initialState: initialStateType = {
   posts: [],
   isPopupForCreatingPostOpen: false,
+  page: 1,
+  loading: true,
   isAddingPhotos: false,
+  hasMore: true,
   caption: "",
   photos: [],
 };
@@ -37,6 +43,18 @@ export const getPosts = createAsyncThunk(
   "post/getPosts",
   async (userId: number) => {
     const res = await axios.get(`${PostsRoute}/${userId}`, {
+      withCredentials: true,
+    });
+    const data = res.data;
+
+    return data;
+  }
+);
+
+export const getMorePosts = createAsyncThunk(
+  "post/getMorePosts",
+  async ({ userId, page }: { userId: number; page: number }) => {
+    const res = await axios.get(`${PostsRoute}/${userId}?page=${page}`, {
       withCredentials: true,
     });
     const data = res.data;
@@ -68,10 +86,29 @@ const postSlice = createSlice({
     setCaption: (state, action) => {
       state.caption = action.payload;
     },
+    removePost: (state, action) => {
+      state.posts = state.posts.filter((post) => {
+        return post.post_id !== action.payload;
+      });
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getPosts.fulfilled, (state, action) => {
       state.posts = action.payload;
+      state.loading = false;
+    });
+    builder.addCase(getMorePosts.pending, (state, action) => {
+      state.loading = true;
+    });
+    builder.addCase(getMorePosts.fulfilled, (state, action) => {
+      if (action.payload.length > 0) {
+        state.posts = [...state.posts, ...action.payload];
+        state.page = state.page + 1;
+        state.loading = false;
+      } else {
+        state.hasMore = false;
+        state.loading = false;
+      }
     });
   },
 });
@@ -84,5 +121,6 @@ export const {
   doneAddingPhotos,
   setCaption,
   setPhotos,
+  removePost,
 } = postSlice.actions;
 export default postSlice.reducer;

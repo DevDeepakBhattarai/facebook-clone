@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const crypto = require("crypto");
 const router = express.Router();
@@ -6,24 +7,28 @@ const mysql = require("mysql2");
 const multer = require("multer");
 const sharp = require("sharp");
 const fs = require("fs");
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
+const MySQLStore = require("express-mysql-session")(session);
 const formidable = require("formidable");
 
 const GETTING_POST_SQL = `
-SELECT first_name,last_name,profile_pic,gender,posts.*,count(postlikes.post_id) as total_likes, count(comments.post_id) as total_comments,
+SELECT user_data.user_id,first_name,last_name,profile_pic,gender,posts.*,count(postlikes.post_id) as total_likes, count(comments.post_id) as total_comments,
 exists(select user_id from postlikes where user_id=? and postLikes.post_id=posts.post_id) as hasLiked
 FROM posts
 left outer join postlikes on  posts.post_id =postLikes.post_id
 left outer join comments on comments.post_id =posts.post_id
 join user_data on user_data.user_id=posts.user_id
- where posts.user_id in (
+ where posts.user_id = ? or posts.user_id in (
 	select friend_id from friends as R1 join json_table(
     R1.friend, 
     "$[*]" columns(friend_id INT path "$.friend")
-) as R2
-where user_id = ?
+) as R2 
+where user_id = ? 
 )
 group by posts.post_id
-limit 5;
+order by case when user_data.user_id=6 then 0 else 1 end
+limit 5 offset ?;
 `;
 
 const GETTING_COMMENTS_SQL = `
@@ -50,7 +55,29 @@ const storage = multer.diskStorage({
   },
 });
 
+const sessionStore = new MySQLStore({
+  host: process.env.HOST,
+  port: 3306,
+  user: process.env.USER,
+  password: process.env.DB_PASS,
+  database: "facebook",
+});
+
 const upload = multer({ storage });
+
+router.use(
+  session({
+    secret: "cookie",
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+    cookie: {
+      httpOnly: false,
+      secure: false,
+      maxAge: 1000 * 24 * 60 * 60 * 2,
+    },
+  })
+);
 
 const db = mysql.createConnection({
   user: "Deepak",
@@ -62,26 +89,37 @@ const db = mysql.createConnection({
 
 router.get("/posts/:userId", (req, res) => {
   const { userId } = req.params;
-  db.query(GETTING_POST_SQL, [userId, userId], (err, result) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    const newResult = result.map((post) => {
-      let additional_comment =
-        post.type === "profile"
-          ? post.gender === "Male"
-            ? "updated his profile picture"
-            : "updated her profile picture"
-          : null;
-      return {
-        ...post,
-        additional_comment,
-      };
-    });
+  const page = Number(req.query.page);
 
-    res.send(newResult);
-  });
+  if (req.query.page !== undefined && page === NaN) {
+    res.send("Please provide a valid page number");
+  }
+
+  const offset = page ? page + 4 : 0;
+  db.query(
+    GETTING_POST_SQL,
+    [userId, userId, userId, offset],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      const newResult = result.map((post) => {
+        let additional_comment =
+          post.type === "profile"
+            ? post.gender === "Male"
+              ? "updated his profile picture"
+              : "updated her profile picture"
+            : null;
+        return {
+          ...post,
+          additional_comment,
+        };
+      });
+
+      res.send(newResult);
+    }
+  );
 });
 
 router.get("/comments/:postId", (req, res) => {
@@ -135,13 +173,29 @@ router.post("/posts", formDataMiddleware, async (req, res) => {
     caption,
     JSON.stringify(fileToBeUploadedToDB),
     new Date(),
-    type ? type : "profile",
+    type ? "profile" : type,
   ];
 
-  db.query(INSERTING_POSTS, dataToInsertIntoDB, (err) => {
+  db.query(INSERTING_POSTS, dataToInsertIntoDB, (err, result) => {
     if (err) console.log(err);
     res.send({ success: true });
   });
+});
+
+router.delete("/posts/:postId", (req, res) => {
+  const { postId } = req.params;
+  console.log(postId);
+  if (req.session?.isAuth) {
+    db.query("delete from posts where post_id = ?", [postId], (err) => {
+      if (err) {
+        console.log(err);
+        res.status(500);
+      }
+      res.send("Successfully deleted");
+    });
+  } else {
+    res.status(400).send("Please login to your account first");
+  }
 });
 
 function formDataMiddleware(req, res, next) {

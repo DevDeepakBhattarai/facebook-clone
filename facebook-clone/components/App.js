@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 
 export default function App({ socket }) {
   const { isAuth } = useSelector((store) => store.auth);
-  console.log(socket);
   if (isAuth) {
     return (
       <>

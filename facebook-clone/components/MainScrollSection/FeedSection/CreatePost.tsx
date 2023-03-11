@@ -17,6 +17,7 @@ import {
   addPhotos,
   doneAddingPhotos,
   doneCreatingPost,
+  getPosts,
   setCaption,
 } from "../../../src/postSlice";
 import CreatePostPhotoList from "./CreatePostPhotoList";
@@ -314,6 +315,7 @@ export default function CreatePost() {
     const data = res.data;
     console.log(data);
     dispatch(doneCreatingPost());
+    dispatch(getPosts(userId!));
     setIsPosting(false);
   }
 }

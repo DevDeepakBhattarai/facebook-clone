@@ -64,6 +64,6 @@ export async function getServerSideProps(context: any) {
   );
   const data = res.data;
   return {
-    props: { data },
+    props: { data, shouldNavBarBeHidden: true },
   };
 }

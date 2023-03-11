@@ -56,8 +56,6 @@ export default function Call({ socket, userId }) {
   const endCallButton = useRef();
   const shareScreenButton = useRef();
 
-  document.querySelector(".nav-bar").style.display = "none";
-
   useLayoutEffect(() => {
     const handler = () => {
       peer.close();

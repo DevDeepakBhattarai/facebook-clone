@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { MutableRefObject, useState } from "react";
 import { Post } from "../../../src/postSlice";
 import { getTimeDifference } from "../../../utils/getTimeDifference";
 import PostImageGrid from "./PostImageGrid";
@@ -20,6 +20,7 @@ import { PostsRoute } from "../../../Routes";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../src/store";
 import CommentSection from "./CommentSection";
+import Menu from "./Menu";
 
 export default function Posts({
   post_id,
@@ -41,7 +42,7 @@ export default function Posts({
   return (
     <div className="bg-dark mt-4 rounded-lg">
       <div className="p-4">
-        <div className="flex items-center justify-between ">
+        <div className="flex items-center justify-between">
           <div className="flex gap-2">
             <div className="h-10 w-10 rounded-full overflow-hidden bg-gray-500 hover:opacity-50">
               <img src={profile_pic} alt="" />
@@ -65,10 +66,8 @@ export default function Posts({
             </div>
           </div>
 
-          <div className="flex items-center justify-center">
-            <div className="flex items-center justify-center h-10 w-10 rounded-full text-gray-400 hover:bg-fb-gray">
-              <FontAwesomeIcon icon={faEllipsisH}></FontAwesomeIcon>
-            </div>
+          <div className="flex items-center justify-center relative">
+            <Menu post_id={post_id}></Menu>
             <div className="flex items-center justify-center h-10 w-10 rounded-full text-gray-400 hover:bg-fb-gray">
               <FontAwesomeIcon icon={faMultiply}></FontAwesomeIcon>
             </div>
