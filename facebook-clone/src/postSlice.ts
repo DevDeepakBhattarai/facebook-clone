@@ -61,6 +61,16 @@ export const getMorePosts = createAsyncThunk(
     return data;
   }
 );
+export const getMyPost = createAsyncThunk(
+  "post/getMyPosts",
+  async (userId: number) => {
+    const res = await axios.get(`${PostsRoute}/myPost/${userId}`, {
+      withCredentials: true,
+    });
+    const data = res.data;
+    return data;
+  }
+);
 const postSlice = createSlice({
   name: "post",
   initialState: initialState,
@@ -94,6 +104,7 @@ const postSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(getPosts.fulfilled, (state, action) => {
+      if (action.payload.length < 1) state.hasMore = false;
       state.posts = action.payload;
       state.loading = false;
     });
@@ -108,6 +119,11 @@ const postSlice = createSlice({
       } else {
         state.hasMore = false;
         state.loading = false;
+      }
+    });
+    builder.addCase(getMyPost.fulfilled, (state, action) => {
+      if (action.payload.length > 0) {
+        state.posts = [...action.payload, ...state.posts];
       }
     });
   },

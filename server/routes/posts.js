@@ -27,9 +27,19 @@ join user_data on user_data.user_id=posts.user_id
 where user_id = ? 
 )
 group by posts.post_id
-order by case when user_data.user_id=6 then 0 else 1 end
+order by case when user_data.user_id=? then 0 else 1 end,posts.uploaded_at desc
 limit 5 offset ?;
 `;
+const GETTING_MY_POST = `
+select first_name,last_name,profile_pic,gender, posts.* ,count(comments.post_id) as total_comments,count(postlikes.post_id) as total_likes,exists(select user_id from postlikes where user_id=? and postLikes.post_id=posts.post_id) as hasLiked
+from posts
+left join user_data on user_data.user_id=posts.user_id
+left outer join comments on posts.post_id=comments.post_id
+left outer join postlikes on posts.post_id=postlikes.post_id
+where posts.user_id=?
+group by posts.post_id
+order by posts.uploaded_at desc
+limit 1;`;
 
 const GETTING_COMMENTS_SQL = `
 select comments.* , count(commentLikes.comment_id) as total_likes,first_name,last_name,profile_pic from comments
@@ -98,7 +108,7 @@ router.get("/posts/:userId", (req, res) => {
   const offset = page ? page + 4 : 0;
   db.query(
     GETTING_POST_SQL,
-    [userId, userId, userId, offset],
+    [userId, userId, userId, userId, offset],
     (err, result) => {
       if (err) {
         console.log(err);
@@ -179,6 +189,17 @@ router.post("/posts", formDataMiddleware, async (req, res) => {
   db.query(INSERTING_POSTS, dataToInsertIntoDB, (err, result) => {
     if (err) console.log(err);
     res.send({ success: true });
+  });
+});
+
+router.get("/posts/myPost/:userId", (req, res) => {
+  const { userId } = req.params;
+  db.query(GETTING_MY_POST, [userId, userId], (err, result) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    res.send(result);
   });
 });
 
