@@ -145,15 +145,17 @@ router.get("/comments/:postId", (req, res) => {
 
 router.post("/posts", formDataMiddleware, async (req, res) => {
   const { user, caption, type } = req.body;
+  const post_id = crypto.randomUUID();
   const files = req.files;
   console.log(files);
   const fileToBeUploadedToDB = [];
+
   await Promise.all(
     files.map(async (file) => {
       const fileName = `${file.newFilename}-${Date.now()}`;
       const fileContent = await fs.promises.readFile(file.filepath);
 
-      sharp(fileContent)
+      await sharp(fileContent)
         .metadata()
         .then((metadata) => {
           const width = metadata.width;
@@ -178,7 +180,7 @@ router.post("/posts", formDataMiddleware, async (req, res) => {
     })
   );
   const dataToInsertIntoDB = [
-    crypto.randomUUID(),
+    post_id,
     user,
     caption,
     JSON.stringify(fileToBeUploadedToDB),
@@ -188,11 +190,11 @@ router.post("/posts", formDataMiddleware, async (req, res) => {
 
   db.query(INSERTING_POSTS, dataToInsertIntoDB, (err, result) => {
     if (err) console.log(err);
-    res.send({ success: true });
+    res.send({ success: true, post_id: post_id });
   });
 });
 
-router.get("/posts/myPost/:userId", (req, res) => {
+router.get("/posts/myPost/:userId", async (req, res) => {
   const { userId } = req.params;
   db.query(GETTING_MY_POST, [userId, userId], (err, result) => {
     if (err) {

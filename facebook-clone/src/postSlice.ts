@@ -61,16 +61,7 @@ export const getMorePosts = createAsyncThunk(
     return data;
   }
 );
-export const getMyPost = createAsyncThunk(
-  "post/getMyPosts",
-  async (userId: number) => {
-    const res = await axios.get(`${PostsRoute}/myPost/${userId}`, {
-      withCredentials: true,
-    });
-    const data = res.data;
-    return data;
-  }
-);
+
 const postSlice = createSlice({
   name: "post",
   initialState: initialState,
@@ -101,6 +92,9 @@ const postSlice = createSlice({
         return post.post_id !== action.payload;
       });
     },
+    addMyPost: (state, action) => {
+      state.posts = [action.payload, ...state.posts];
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getPosts.fulfilled, (state, action) => {
@@ -121,11 +115,6 @@ const postSlice = createSlice({
         state.loading = false;
       }
     });
-    builder.addCase(getMyPost.fulfilled, (state, action) => {
-      if (action.payload.length > 0) {
-        state.posts = [...action.payload, ...state.posts];
-      }
-    });
   },
 });
 
@@ -138,5 +127,6 @@ export const {
   setCaption,
   setPhotos,
   removePost,
+  addMyPost,
 } = postSlice.actions;
 export default postSlice.reducer;

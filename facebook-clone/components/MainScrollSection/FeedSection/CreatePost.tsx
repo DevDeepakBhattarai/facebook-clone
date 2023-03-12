@@ -17,7 +17,7 @@ import {
   addPhotos,
   doneAddingPhotos,
   doneCreatingPost,
-  getMyPost,
+  addMyPost,
   getPosts,
   setCaption,
 } from "../../../src/postSlice";
@@ -314,9 +314,36 @@ export default function CreatePost() {
       headers: { "Content-Type": "multipart/form-data" },
     });
     const data = res.data;
-    console.log(data);
+
     dispatch(doneCreatingPost());
-    dispatch(getMyPost(userId!));
+
+    const fileReader = new FileReader();
+    let media: Array<string> = [];
+    photos.map((photo, index) => {
+      fileReader.readAsDataURL(photo);
+      fileReader.onload = (e) => {
+        if (e.target) media.push(e.target.result as string);
+
+        if (index + 1 === photos.length) {
+          setIsPosting(false);
+          const post = {
+            first_name: userName?.split(" ")[0],
+            last_name: userName?.split(" ")[1],
+            profile_pic: profile,
+            user_id: userId,
+            media: media,
+            uploaded_at: new Date(),
+            caption: caption,
+            post_id: data.post_id,
+            total_comments: 0,
+            total_likes: 0,
+            hasLiked: false,
+          };
+          dispatch(addMyPost(post));
+        }
+      };
+    });
+
     setIsPosting(false);
   }
 }
